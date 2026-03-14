@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recovery Equipment Checkout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #22c55e;
+            --green-dark: #16a34a;
+            --red: #ef4444;
+            --red-dark: #dc2626;
+            --charcoal: #1a1a1a;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --white: #ffffff;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--charcoal);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* ── Logo ── */
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 24px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        /* ── Left Panel ── */
+        .left-panel {
+            width: 35%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            border-right: 2px solid var(--gray-200);
+            position: relative;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 10%;
+            height: 80%;
+            width: 0;
+            border-right: 2px solid var(--gray-200);
+        }
+
+        .step-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.4rem;
+            letter-spacing: 2px;
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 2.5rem;
+            color: var(--charcoal);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--charcoal);
+            color: var(--white);
+            width: 42px;
+            height: 42px;
+            line-height: 42px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 1.4rem;
+            margin-right: 8px;
+            vertical-align: middle;
+            position: relative;
+            top: -2px;
+        }
+
+        .input-wrapper {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .enter-btn {
+            padding: 0 24px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 1.5px;
+            background: #c8102e;
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            white-space: nowrap;
+        }
+
+        .enter-btn:hover {
+            background: #a50d25;
+        }
+
+        .enter-btn:active {
+            transform: scale(0.97);
+        }
+
+        .member-input {
+            flex: 1;
+            padding: 18px 22px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.15rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            background: var(--gray-100);
+            color: var(--charcoal);
+            outline: none;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .member-input::placeholder {
+            color: var(--gray-400);
+            font-weight: 300;
+        }
+
+        .member-input:focus {
+            border-color: var(--charcoal);
+            box-shadow: 0 0 0 4px rgba(26, 26, 26, 0.08);
+        }
+
+        .input-hint {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            text-align: center;
+        }
+
+
+        /* ── Right Panel ── */
+        .right-panel {
+            width: 65%;
+            padding: 2.5rem 3rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-header {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.4rem;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            color: var(--charcoal);
+        }
+
+        /* ── Equipment Grid ── */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .equipment-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .equipment-card:hover {
+            border-color: var(--gray-400);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .equipment-card.checked-out {
+            border-color: var(--red);
+            background: #fef2f2;
+        }
+
+        .equipment-img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: contain;
+            border-radius: 8px;
+            background: transparent;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+
+        .equipment-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 1.5px;
+            color: var(--charcoal);
+            text-align: center;
+        }
+
+        .equipment-user {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+            min-height: 1.2em;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .equipment-timer {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            color: var(--charcoal);
+            margin-top: 4px;
+            min-height: 1.4em;
+        }
+
+        .checkout-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .checkout-btn:active {
+            transform: scale(0.97);
+        }
+
+        .checkout-btn.available {
+            background: var(--green);
+            color: var(--white);
+        }
+
+        .checkout-btn.available:hover {
+            background: var(--green-dark);
+        }
+
+        .checkout-btn.in-use {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .checkout-btn.in-use:hover {
+            background: var(--red-dark);
+        }
+
+        .checkout-btn.return-ready {
+            background: #facc15;
+            color: var(--charcoal);
+        }
+
+        .checkout-btn.return-ready:hover {
+            background: #eab308;
+        }
+
+        /* ── Queue Panel ── */
+        .queue-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 24px;
+            width: calc(35% - 48px);
+            max-height: 220px;
+            overflow-y: auto;
+            background: var(--gray-100);
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+
+        .queue-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 1.5px;
+            color: var(--charcoal);
+            margin-bottom: 8px;
+        }
+
+        .queue-empty {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            font-style: italic;
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.85rem;
+        }
+
+        .queue-item:last-child {
+            border-bottom: none;
+        }
+
+        .queue-item-name {
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .queue-item-equip {
+            color: var(--gray-500);
+            font-size: 0.8rem;
+        }
+
+        .queue-position {
+            background: var(--charcoal);
+            color: var(--white);
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-right: 10px;
+        }
+
+        .queue-item-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        /* ── Shake animation for input validation ── */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+            border-color: var(--red) !important;
+        }
+    </style>
+</head>
+<body>
+    <img class="logo" src="Assets/Mac Logo.jpg" alt="Logo">
+    <div class="container">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="step-label">
+                <span class="step-number">1</span> Enter Name<br>to Check Out
+            </div>
+            <div class="input-wrapper">
+                <div class="input-row">
+                    <input
+                        type="text"
+                        class="member-input"
+                        id="memberInput"
+                        placeholder="Enter your name"
+                        autocomplete="off"
+                    >
+                    <button class="enter-btn" id="enterBtn" onclick="confirmName()">Enter</button>
+                </div>
+                <p class="input-hint">Enter your name and press Enter, then select equipment</p>
+            </div>
+        </div>
+
+        <!-- Queue Panel -->
+        <div class="queue-panel" id="queuePanel">
+            <div class="queue-title">Queue</div>
+            <div class="queue-empty" id="queueEmpty">No one waiting</div>
+            <div id="queueList"></div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <div class="right-header">
+                <span class="step-number">2</span> Choose Equipment
+            </div>
+            <div class="equipment-grid" id="equipmentGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const equipment = [
+            { name: 'Normatec',        image: 'Assets/Legs.webp' },
+            { name: 'Normatec',        image: 'Assets/Legs.webp' },
+            { name: 'Normatec',        image: 'Assets/Legs.webp' },
+            { name: 'Normatec (Small)', image: 'Assets/Legs.webp' },
+            { name: 'Arms',            image: 'Assets/Arms.jpg' },
+            { name: 'Hips',            image: 'Assets/Hips.webp' },
+            { name: 'Hyperice A',       image: 'Assets/Hyperice gun.webp' },
+            { name: 'Hyperice B',       image: 'Assets/Hyperice gun.webp' },
+            { name: 'Hyperice C',       image: 'Assets/Hyperice gun.webp' },
+        ];
+
+        const state = equipment.map(() => ({
+            checkedOutBy: null,
+            startTime: null,
+            timerInterval: null,
+        }));
+
+        // Queue: array of { name, equipmentIndex }
+        const queue = [];
+
+        // Active member — set when user presses Enter
+        let activeMember = null;
+
+        const grid = document.getElementById('equipmentGrid');
+        const memberInput = document.getElementById('memberInput');
+        const queueList = document.getElementById('queueList');
+        const queueEmpty = document.getElementById('queueEmpty');
+
+        // Build cards
+        equipment.forEach((item, i) => {
+            const card = document.createElement('div');
+            card.className = 'equipment-card';
+            card.id = `card-${i}`;
+            card.innerHTML = `
+                <img class="equipment-img" src="${item.image}" alt="${item.name}">
+                <div class="equipment-name">${item.name}</div>
+                <div class="equipment-user" id="user-${i}"></div>
+                <div class="equipment-timer" id="timer-${i}"></div>
+                <button class="checkout-btn available" id="btn-${i}" onclick="handleCheckout(${i})">Check Out</button>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Allow pressing Enter key on the input
+        memberInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmName();
+        });
+
+        function confirmName() {
+            const name = memberInput.value.trim();
+            if (!name) {
+                memberInput.classList.add('shake');
+                memberInput.focus();
+                setTimeout(() => memberInput.classList.remove('shake'), 400);
+                return;
+            }
+            activeMember = name;
+            memberInput.disabled = true;
+            document.getElementById('enterBtn').textContent = 'Clear';
+            document.getElementById('enterBtn').onclick = clearName;
+            updateButtons();
+        }
+
+        function clearName() {
+            activeMember = null;
+            memberInput.disabled = false;
+            memberInput.value = '';
+            memberInput.focus();
+            document.getElementById('enterBtn').textContent = 'Enter';
+            document.getElementById('enterBtn').onclick = confirmName;
+            updateButtons();
+        }
+
+        // Update all buttons to show "Return" (yellow) if active member owns that equipment
+        function updateButtons() {
+            equipment.forEach((item, i) => {
+                const s = state[i];
+                const btn = document.getElementById(`btn-${i}`);
+                const card = document.getElementById(`card-${i}`);
+
+                if (s.checkedOutBy === null) {
+                    btn.textContent = 'Check Out';
+                    btn.className = 'checkout-btn available';
+                    card.classList.remove('checked-out');
+                } else if (activeMember && s.checkedOutBy.toLowerCase() === activeMember.toLowerCase()) {
+                    btn.textContent = 'Return';
+                    btn.className = 'checkout-btn return-ready';
+                    card.classList.add('checked-out');
+                } else {
+                    btn.textContent = 'Checked Out';
+                    btn.className = 'checkout-btn in-use';
+                    card.classList.add('checked-out');
+                }
+            });
+        }
+
+        function renderQueue() {
+            queueList.innerHTML = '';
+            if (queue.length === 0) {
+                queueEmpty.style.display = 'block';
+                return;
+            }
+            queueEmpty.style.display = 'none';
+            queue.forEach((entry, i) => {
+                const div = document.createElement('div');
+                div.className = 'queue-item';
+                div.innerHTML = `
+                    <div class="queue-item-info">
+                        <span class="queue-position">${i + 1}</span>
+                        <span class="queue-item-name">${entry.name}</span>
+                    </div>
+                    <span class="queue-item-equip">${equipment[entry.equipmentIndex].name}</span>
+                `;
+                queueList.appendChild(div);
+            });
+        }
+
+        function removeFromQueue(name) {
+            const idx = queue.findIndex(q => q.name.toLowerCase() === name.toLowerCase());
+            if (idx !== -1) {
+                queue.splice(idx, 1);
+                renderQueue();
+            }
+        }
+
+        function handleCheckout(index) {
+            if (!activeMember) {
+                memberInput.classList.add('shake');
+                memberInput.focus();
+                setTimeout(() => memberInput.classList.remove('shake'), 400);
+                return;
+            }
+
+            const s = state[index];
+            const card = document.getElementById(`card-${index}`);
+            const btn = document.getElementById(`btn-${index}`);
+            const userEl = document.getElementById(`user-${index}`);
+            const timerEl = document.getElementById(`timer-${index}`);
+
+            if (s.checkedOutBy === null) {
+                // ── Check Out ──
+                s.checkedOutBy = activeMember;
+                s.startTime = Date.now();
+                userEl.textContent = activeMember;
+                timerEl.textContent = '00:00';
+
+                // Remove from queue if they were waiting
+                removeFromQueue(activeMember);
+
+                // Start timer
+                s.timerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - s.startTime) / 1000);
+                    const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                    const secs = String(elapsed % 60).padStart(2, '0');
+                    timerEl.textContent = `${mins}:${secs}`;
+                }, 1000);
+
+                // Clear active member for next customer
+                clearName();
+
+            } else if (activeMember.toLowerCase() === s.checkedOutBy.toLowerCase()) {
+                // ── Return Equipment ──
+                clearInterval(s.timerInterval);
+                s.checkedOutBy = null;
+                s.startTime = null;
+                s.timerInterval = null;
+                userEl.textContent = '';
+                timerEl.textContent = '';
+
+                // Clear active member for next customer
+                clearName();
+
+            } else {
+                // ── Someone else wants it — add to queue ──
+                const alreadyQueued = queue.some(
+                    q => q.name.toLowerCase() === activeMember.toLowerCase() && q.equipmentIndex === index
+                );
+                if (alreadyQueued) {
+                    alert(`"${activeMember}" is already in the queue for ${equipment[index].name}.`);
+                    return;
+                }
+                queue.push({ name: activeMember, equipmentIndex: index });
+                renderQueue();
+                clearName();
+            }
+        }
+    </script>
+</body>
+</html>
