@@ -706,17 +706,37 @@
             updateButtons();
         }
 
+        // Count how many of boxes 0-5 (compression devices) are checked out
+        function compressionCheckedOutCount() {
+            let count = 0;
+            for (let i = 0; i <= 5; i++) {
+                if (state[i].checkedOutBy !== null) count++;
+            }
+            return count;
+        }
+
+        const COMPRESSION_LIMIT = 3;
+
         // Update all buttons to show "Return" (yellow) if active member owns that equipment
         function updateButtons() {
+            const compCount = compressionCheckedOutCount();
+
             equipment.forEach((item, i) => {
                 const s = state[i];
                 const btn = document.getElementById(`btn-${i}`);
                 const card = document.getElementById(`card-${i}`);
 
                 if (s.checkedOutBy === null) {
-                    btn.textContent = 'Check Out';
-                    btn.className = 'checkout-btn available';
-                    card.classList.remove('checked-out');
+                    // For boxes 0-5: if compression limit reached, show as unavailable
+                    if (i <= 5 && compCount >= COMPRESSION_LIMIT) {
+                        btn.textContent = 'At Capacity';
+                        btn.className = 'checkout-btn in-use';
+                        card.classList.add('checked-out');
+                    } else {
+                        btn.textContent = 'Check Out';
+                        btn.className = 'checkout-btn available';
+                        card.classList.remove('checked-out');
+                    }
                 } else if (activeMember && s.checkedOutBy.toLowerCase() === activeMember.toLowerCase()) {
                     btn.textContent = 'Return';
                     btn.className = 'checkout-btn return-ready';
@@ -850,6 +870,10 @@
 
             if (s.checkedOutBy === null) {
                 // ── Check Out ──
+                // Block if compression devices are at capacity
+                if (index <= 5 && compressionCheckedOutCount() >= COMPRESSION_LIMIT) {
+                    return;
+                }
                 // Boxes 0-5 require waiver, boxes 6-8 skip it
                 if (index <= 5) {
                     showWaiver(index);
