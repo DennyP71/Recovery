@@ -696,6 +696,25 @@
                 setTimeout(() => memberInput.classList.remove('shake'), 400);
                 return;
             }
+            // ── "Clearall" command — return all equipment ──
+            if (name.toLowerCase() === 'clearall') {
+                state.forEach((s, i) => {
+                    if (s.checkedOutBy !== null) {
+                        clearInterval(s.timerInterval);
+                        s.checkedOutBy = null;
+                        s.startTime = null;
+                        s.timerInterval = null;
+                        document.getElementById(`user-${i}`).textContent = '';
+                        document.getElementById(`timer-${i}`).textContent = '';
+                    }
+                });
+                queue.length = 0;
+                renderQueue();
+                memberInput.value = '';
+                memberInput.focus();
+                updateButtons();
+                return;
+            }
             activeMember = name;
             memberInput.disabled = true;
             document.getElementById('enterBtn').textContent = 'Clear';
@@ -877,8 +896,18 @@
 
             if (s.checkedOutBy === null) {
                 // ── Check Out ──
-                // Block if compression devices are at capacity
+                // Block if compression devices are at capacity — offer queue instead
                 if (index <= 5 && compressionCheckedOutCount() >= COMPRESSION_LIMIT) {
+                    const alreadyQueued = queue.some(
+                        q => q.name.toLowerCase() === activeMember.toLowerCase() && q.equipmentIndex === index
+                    );
+                    if (alreadyQueued) {
+                        alert(`"${activeMember}" is already in the queue for ${equipment[index].name}.`);
+                        return;
+                    }
+                    queue.push({ name: activeMember, equipmentIndex: index });
+                    renderQueue();
+                    clearName();
                     return;
                 }
                 // Boxes 0-5 require waiver, boxes 6-8 skip it
