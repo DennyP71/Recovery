@@ -698,27 +698,35 @@
             }
             // ── "Clearall" command — return all equipment ──
             if (name.toLowerCase() === 'clearall') {
-                state.forEach((s, i) => {
-                    if (s.checkedOutBy !== null) {
-                        clearInterval(s.timerInterval);
-                        s.checkedOutBy = null;
-                        s.startTime = null;
-                        s.timerInterval = null;
-                        document.getElementById(`user-${i}`).textContent = '';
-                        document.getElementById(`timer-${i}`).textContent = '';
-                    }
-                });
-                queue.length = 0;
-                renderQueue();
-                memberInput.value = '';
-                memberInput.focus();
-                updateButtons();
+                clearAll();
                 return;
             }
             activeMember = name;
             memberInput.disabled = true;
             document.getElementById('enterBtn').textContent = 'Clear';
             document.getElementById('enterBtn').onclick = clearName;
+            updateButtons();
+        }
+
+        function clearAll() {
+            state.forEach((s, i) => {
+                if (s.checkedOutBy !== null) {
+                    clearInterval(s.timerInterval);
+                    s.checkedOutBy = null;
+                    s.startTime = null;
+                    s.timerInterval = null;
+                    document.getElementById(`user-${i}`).textContent = '';
+                    document.getElementById(`timer-${i}`).textContent = '';
+                }
+            });
+            queue.length = 0;
+            renderQueue();
+            activeMember = null;
+            memberInput.disabled = false;
+            memberInput.value = '';
+            memberInput.focus();
+            document.getElementById('enterBtn').textContent = 'Enter';
+            document.getElementById('enterBtn').onclick = confirmName;
             updateButtons();
         }
 
