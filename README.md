@@ -14,16 +14,6 @@ A single-page kiosk app for checking recovery/compression equipment in and out a
 
 Normatec (x3), Normatec (Small), Arms, Hips, Hyperice massage guns (x3), Vyper foam rollers (x2), Inversion Table, Hypersphere (x2), Venom.
 
-## Usage
-
-This is a static HTML/CSS/JS app with no build step or dependencies. Open `index.html` in a browser, or serve the folder with any static file server:
-
-```bash
-python3 -m http.server
-```
-
-Intended for a kiosk/tablet display at the front desk.
-
 ## Project structure
 
 - `index.html` — the entire app (markup, styles, and logic)

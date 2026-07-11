@@ -634,6 +634,7 @@
             { name: 'Normatec',        image: 'Assets/Legs.webp' },
             { name: 'Normatec',        image: 'Assets/Legs.webp' },
             { name: 'Normatec',        image: 'Assets/Legs.webp' },
+            { name: 'Normatec',        image: 'Assets/Legs.webp' },
             { name: 'Normatec (Small)', image: 'Assets/Legs.webp' },
             { name: 'Arms',            image: 'Assets/Arms.jpg' },
             { name: 'Hips',            image: 'Assets/Hips.webp' },
@@ -743,7 +744,7 @@
         // Count how many of boxes 0-5 (compression devices) are checked out
         function compressionCheckedOutCount() {
             let count = 0;
-            for (let i = 0; i <= 5; i++) {
+            for (let i = 0; i <= 6; i++) {
                 if (state[i].checkedOutBy !== null) count++;
             }
             return count;
@@ -762,7 +763,7 @@
 
                 if (s.checkedOutBy === null) {
                     // For boxes 0-5: if compression limit reached, show as unavailable
-                    if (i <= 5 && compCount >= COMPRESSION_LIMIT) {
+                    if (i <= 6 && compCount >= COMPRESSION_LIMIT) {
                         btn.textContent = 'At Capacity';
                         btn.className = 'checkout-btn in-use';
                         card.classList.add('checked-out');
@@ -905,7 +906,7 @@
             if (s.checkedOutBy === null) {
                 // ── Check Out ──
                 // Block if compression devices are at capacity — offer queue instead
-                if (index <= 5 && compressionCheckedOutCount() >= COMPRESSION_LIMIT) {
+                if (index <= 6 && compressionCheckedOutCount() >= COMPRESSION_LIMIT) {
                     const alreadyQueued = queue.some(
                         q => q.name.toLowerCase() === activeMember.toLowerCase() && q.equipmentIndex === index
                     );
@@ -919,7 +920,7 @@
                     return;
                 }
                 // Boxes 0-5 require waiver, boxes 6-8 skip it
-                if (index <= 5) {
+                if (index <= 6) {
                     showWaiver(index);
                 } else {
                     completeCheckout(index);
