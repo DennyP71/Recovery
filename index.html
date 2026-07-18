@@ -81,6 +81,12 @@
             line-height: 1.2;
             margin-bottom: 2.5rem;
             color: var(--charcoal);
+            transition: opacity 0.25s ease;
+            opacity: 1;
+        }
+
+        .step-label.fade-out {
+            opacity: 0;
         }
 
         .step-number {
@@ -160,6 +166,45 @@
             font-size: 0.85rem;
             color: var(--gray-500);
             text-align: center;
+        }
+
+        .input-form {
+            transition: opacity 0.25s ease;
+            opacity: 1;
+        }
+
+        .input-form.fade-out {
+            opacity: 0;
+        }
+
+        .confirm-message {
+            display: none;
+            opacity: 0;
+            max-width: 380px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--charcoal);
+            text-align: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .confirm-arrow {
+            margin-top: 18px;
+            font-size: 2.2rem;
+            color: #c8102e;
+            animation: arrow-point 1.2s ease-in-out infinite;
+        }
+
+        @keyframes arrow-point {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        .confirm-message.active {
+            display: block;
+            opacity: 1;
         }
 
 
@@ -547,21 +592,27 @@
         <!-- Left Panel -->
         <div class="left-panel">
             <img class="logo" src="Assets/Mac Logo.jpg" alt="Logo">
-            <div class="step-label">
+            <div class="step-label" id="stepLabel">
                 <span class="step-number">1</span> Enter Name<br>to Check Out
             </div>
             <div class="input-wrapper">
-                <div class="input-row">
-                    <input
-                        type="text"
-                        class="member-input"
-                        id="memberInput"
-                        placeholder="Enter your name"
-                        autocomplete="off"
-                    >
-                    <button class="enter-btn" id="enterBtn" onclick="confirmName()">Enter</button>
+                <div class="input-form" id="inputForm">
+                    <div class="input-row">
+                        <input
+                            type="text"
+                            class="member-input"
+                            id="memberInput"
+                            placeholder="Enter your name"
+                            autocomplete="off"
+                        >
+                        <button class="enter-btn" id="enterBtn" onclick="confirmName()">Enter</button>
+                    </div>
+                    <p class="input-hint">Enter your name and press Enter, then select equipment</p>
                 </div>
-                <p class="input-hint">Enter your name and press Enter, then select equipment</p>
+                <div class="confirm-message" id="confirmMessage">
+                    <span id="confirmMessageText"></span>
+                    <div class="confirm-arrow">&#8594;</div>
+                </div>
             </div>
         </div>
 
@@ -707,6 +758,41 @@
             document.getElementById('enterBtn').textContent = 'Clear';
             document.getElementById('enterBtn').onclick = clearName;
             updateButtons();
+            showConfirmMessage();
+        }
+
+        // Fades out the name-entry form and shows a confirmation message.
+        // If the member already has equipment checked out, assume they're returning it.
+        function showConfirmMessage() {
+            const isReturning = state.some(
+                s => s.checkedOutBy && s.checkedOutBy.toLowerCase() === activeMember.toLowerCase()
+            );
+            const message = isReturning
+                ? 'Thank you for confirming, please choose recovery equipment you are returning'
+                : 'Thank you for confirming, please choose recovery equipment to check out';
+
+            const stepLabel = document.getElementById('stepLabel');
+            const inputForm = document.getElementById('inputForm');
+            const confirmMessage = document.getElementById('confirmMessage');
+            document.getElementById('confirmMessageText').textContent = message;
+            stepLabel.classList.add('fade-out');
+            inputForm.classList.add('fade-out');
+            setTimeout(() => {
+                stepLabel.style.display = 'none';
+                inputForm.style.display = 'none';
+                confirmMessage.classList.add('active');
+            }, 250);
+        }
+
+        function resetConfirmMessage() {
+            const stepLabel = document.getElementById('stepLabel');
+            const inputForm = document.getElementById('inputForm');
+            const confirmMessage = document.getElementById('confirmMessage');
+            confirmMessage.classList.remove('active');
+            stepLabel.style.display = '';
+            stepLabel.classList.remove('fade-out');
+            inputForm.style.display = '';
+            inputForm.classList.remove('fade-out');
         }
 
         function clearAll() {
@@ -729,6 +815,7 @@
             document.getElementById('enterBtn').textContent = 'Enter';
             document.getElementById('enterBtn').onclick = confirmName;
             updateButtons();
+            resetConfirmMessage();
         }
 
         function clearName() {
@@ -739,6 +826,7 @@
             document.getElementById('enterBtn').textContent = 'Enter';
             document.getElementById('enterBtn').onclick = confirmName;
             updateButtons();
+            resetConfirmMessage();
         }
 
         // Count how many of boxes 0-5 (compression devices) are checked out
